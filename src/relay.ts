@@ -144,6 +144,7 @@ export function createConversationRelay(deps: ConversationRelayOptions): WebSock
           }
         } else if (event.type === "message.completed") {
           const complete = typeof data.message === "string" ? data.message : "";
+          if (complete.length > 16_000) throw new Error("phone_response_limit");
           const sent = deltas.get(key) ?? "";
           // Some Eve providers only emit the completed message. Never replay
           // already-streamed text or turn tool/reasoning events into speech.

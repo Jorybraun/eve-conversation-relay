@@ -142,6 +142,27 @@ test("relay_runs_without_pipey_dependencies", async t => {
   assert.equal(f.closed, false);
 });
 
+for (const streamedPrefix of ["", "Already streamed."]) {
+  test(`relay_rejects_oversized_completed_response_${streamedPrefix ? "after_streaming" : "without_streaming"}`, async t => {
+    const f = fixture(t);
+    await f.setup();
+    await f.prompt("Recommend a book.");
+    f.receive("turn_1", f.starts[0].message);
+    if (streamedPrefix) {
+      f.event("message.appended", { turnId: "turn_1", stepIndex: 0, messageDelta: streamedPrefix });
+    }
+    f.event("message.completed", {
+      turnId: "turn_1", stepIndex: 0,
+      message: streamedPrefix + "x".repeat(16_001 - streamedPrefix.length),
+    });
+    await settle();
+    assert.equal(f.closed, true);
+    assert.equal(f.output.map(frame => frame.token ?? "").join(""), streamedPrefix);
+    assert.equal(f.canceled, false, "transport failure must preserve durable Eve work");
+    await f.lifetimes[0];
+  });
+}
+
 test("relay_preserves_app_identity_and_context", async t => {
   const f = fixture(t);
   await f.setup();
