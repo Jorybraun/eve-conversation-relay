@@ -8,7 +8,9 @@ belong to a user or organization that grants the publisher access. A package-nam
 ## Review the release candidate
 
 The manifest is prepared with version `0.1.0`, MIT licensing, public npm access,
-compiled ESM exports and the tested Eve peer version. Only the library and its
+compiled ESM exports and the tested Eve peer versions. Development and the public
+starter pin Eve `0.70.1`; the exact peer union also permits legacy `0.63.0` for
+existing consumers. Only the library and its
 fictional examples are included; publishing this package does not publish PIPEY's
 application repository. The public source lives at
 https://github.com/Jorybraun/eve-conversation-relay. Confirm npm scope ownership
@@ -25,6 +27,7 @@ From this repository:
 npm ci --ignore-scripts
 npm run check
 npm run test:package
+EVE_TEST_VERSION=0.63.0 npm run test:package
 npm pack --dry-run
 ```
 
@@ -32,6 +35,17 @@ The consumer check installs a packed artifact into a new temporary project using
 npm. It validates declarations, a standalone Eve build, the sample call store
 and simulated streaming. It prints the exact archive path and leaves the
 temporary project for inspection. It is local evidence, not a provider test.
+CI installs each declared Eve version for source checks and for its independent
+consumer. Its temporary version override leaves the committed manifest and
+lockfile unchanged. The checked-in lockfile tracks the recommended development
+version, not the legacy runtime.
+
+Run `npm audit` on the locked development tree and the printed independent
+consumer before release. On October 2, 2026, both trees using Eve `0.70.1`
+reported no npm advisories; Eve's Undici dependency resolved to `8.10.2`.
+The legacy `0.63.0` tree included advisories affecting its pinned Undici `8.9.0`. Retaining
+API compatibility with that runtime is not a recommendation to adopt its
+dependency tree for a new deployment.
 
 Run a supervised incoming call using the standalone starter. Verify two turns,
 an interruption, hangup/cleanup and a rejected unauthorized caller. Record the
@@ -64,7 +78,7 @@ public publication; none of the preparation commands publishes.
 Verify the published version in another empty project:
 
 ```sh
-npm install eve@0.63.0 @pipey/eve-conversation-relay@0.1.0
+npm install eve@0.70.1 @pipey/eve-conversation-relay@0.1.0
 ```
 
 Repeat the starter's checks using the registry-installed package. Once a public

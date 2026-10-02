@@ -6,8 +6,15 @@ A library that adds Twilio ConversationRelay phone conversations to Eve agents.
 [MIT licensed](LICENSE)
 
 Release candidate, version 0.1.0. **Not published on npm yet.** Prepared under
-the proposed `@pipey` scope with an MIT license. Tested against Eve 0.63.0;
-compatibility with other Eve versions has not been established. Node 24+, ESM.
+the proposed `@pipey` scope with an MIT license. **Use Eve 0.70.1 for new projects.**
+The package is locally tested with Eve 0.70.1 and legacy 0.63.0; other versions
+are not declared compatible. Node 24+, ESM.
+
+Legacy 0.63.0 remains supported for existing consumers such as PIPEY. Its npm
+dependency tree included advisories affecting its pinned Undici 8.9.0 during the October 2,
+2026 audit. The 0.70.1 starter resolves Eve's Undici dependency to 8.10.2 and had
+no reported npm advisories in that audit. Compatibility tests do not replace
+dependency review or live-call verification.
 
 ## Give your Eve agent a phone number
 
@@ -25,16 +32,17 @@ The library validates Twilio's signed request, answers with speech configuration
 opens a WebSocket conversation and sends the caller's words to your Eve agent.
 The agent keeps its own instructions, model, tools and memory.
 
-For an existing project, install the tarball:
+Download the package tarball from [GitHub Releases](https://github.com/Jorybraun/eve-conversation-relay/releases).
+For an existing project, install that tarball:
 
 ```sh
-npm install eve@0.63.0 /absolute/path/pipey-eve-conversation-relay-0.1.0.tgz
+npm install eve@0.70.1 /absolute/path/pipey-eve-conversation-relay-0.1.0.tgz
 ```
 
 After the first npm publication, the equivalent command will be:
 
 ```sh
-npm install eve@0.63.0 @pipey/eve-conversation-relay
+npm install eve@0.70.1 @pipey/eve-conversation-relay
 ```
 
 The ready-made channel is exported from `@pipey/eve-conversation-relay/channel`.
@@ -222,6 +230,12 @@ direct session creation. It downloads public npm dependencies and needs permissi
 to bind a local port. It does not call Twilio or a model.
 Pass `-- --offline` to use an already populated npm cache. The installed tarball
 contains runtime files and examples, not maintainer source/test scripts.
+
+The default consumer uses the recommended Eve 0.70.1. Run
+`EVE_TEST_VERSION=0.63.0 npm run test:package` to check the legacy consumer.
+Only those two exact versions are accepted. CI tests source builds, types and
+unit tests with each installed Eve version, then runs the matching consumer check;
+its version overrides do not change the committed lockfile.
 
 Package tests use public interfaces and fictional data. PIPEY separately tests
 the adapter with its actual installed Eve queue/correlation behavior, call

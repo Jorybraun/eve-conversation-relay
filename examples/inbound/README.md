@@ -14,7 +14,10 @@ store. See `agent/channels/phone.ts` for the complete consumer configuration.
 
 You need Node.js 24+, a Twilio Voice number with ConversationRelay available,
 a model API credential and a public HTTPS endpoint that supports WebSockets.
-Eve is pinned to `0.63.0`, the version this adapter has been tested against.
+Eve is pinned to the recommended `0.70.1`. The adapter also has local compatibility
+checks for legacy `0.63.0`; new projects should use this starter's current pin.
+The older runtime's dependency tree included Undici advisories during the
+October 2, 2026 audit. No other Eve versions are declared compatible.
 
 Before registry publication, use the package tarball supplied by its maintainer:
 

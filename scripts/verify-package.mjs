@@ -8,6 +8,10 @@ import { fileURLToPath } from "node:url";
 
 const source = dirname(dirname(fileURLToPath(import.meta.url)));
 const manifest = JSON.parse(readFileSync(join(source, "package.json"), "utf8"));
+const supportedEveVersions = ["0.63.0", "0.70.1"];
+assert.equal(manifest.peerDependencies.eve, supportedEveVersions.join(" || "), "Keep the tested Eve allowlist and peer versions in sync");
+const eveVersion = process.env.EVE_TEST_VERSION ?? manifest.devDependencies.eve;
+assert.ok(supportedEveVersions.includes(eveVersion), `Unsupported EVE_TEST_VERSION: ${eveVersion}`);
 const scratch = mkdtempSync(join(tmpdir(), "pipey-npm-consumer-"));
 const artifacts = join(scratch, "artifacts");
 const unpacked = join(scratch, "unpacked");
@@ -21,7 +25,7 @@ function run(command, args, cwd, options = {}) {
   });
 }
 
-console.log(`Checking ${manifest.name}@${manifest.version} with ${process.version}`);
+console.log(`Checking ${manifest.name}@${manifest.version} with ${process.version}; consumer Eve ${eveVersion}`);
 console.log(`Independent consumer: ${consumer}`);
 run(npm, ["run", "build"], source);
 // Build explicitly once; inspect the same archive that will be installed.
@@ -47,7 +51,8 @@ run("tar", ["-xzf", archive, "-C", unpacked], source);
 cpSync(join(unpacked, "package/examples/inbound"), consumer, { recursive: true });
 const consumerManifestPath = join(consumer, "package.json");
 const consumerManifest = JSON.parse(readFileSync(consumerManifestPath, "utf8"));
-assert.equal(consumerManifest.dependencies.eve, manifest.peerDependencies.eve);
+assert.equal(consumerManifest.dependencies.eve, manifest.devDependencies.eve, "The starter must pin the recommended development version of Eve");
+consumerManifest.dependencies.eve = eveVersion;
 consumerManifest.dependencies[manifest.name] = `file:${archive}`;
 writeFileSync(consumerManifestPath, `${JSON.stringify(consumerManifest, null, 2)}\n`);
 
@@ -57,6 +62,7 @@ run(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--registry=
 const installed = realpathSync(join(consumer, "node_modules", manifest.name));
 assert.ok(!installed.startsWith(realpathSync(source)), "Consumer resolved to the source workspace");
 assert.equal(JSON.parse(readFileSync(join(installed, "package.json"), "utf8")).version, manifest.version);
+assert.equal(JSON.parse(readFileSync(join(consumer, "node_modules/eve/package.json"), "utf8")).version, eveVersion);
 run(npm, ["run", "typecheck"], consumer);
 run(npm, ["test"], consumer);
 cpSync(join(installed, "examples/simulate-call.ts"), join(consumer, "simulate-call.mts"));

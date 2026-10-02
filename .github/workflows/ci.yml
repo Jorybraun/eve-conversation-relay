@@ -17,6 +17,12 @@ jobs:
   verify:
     runs-on: ubuntu-latest
     timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        eve: ["0.63.0", "0.70.1"]
+    env:
+      EVE_TEST_VERSION: ${{ matrix.eve }}
     steps:
       - name: Check out source
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -29,6 +35,11 @@ jobs:
           cache: npm
       - name: Install locked dependencies
         run: npm ci --ignore-scripts
+      - name: Select and verify the Eve version without changing the lockfile
+        run: |
+          npm install --no-save --package-lock=false --ignore-scripts --no-audit --no-fund "eve@$EVE_TEST_VERSION"
+          node --input-type=module -e 'import assert from "node:assert/strict"; import {readFileSync} from "node:fs"; assert.equal(JSON.parse(readFileSync("node_modules/eve/package.json", "utf8")).version, process.env.EVE_TEST_VERSION);'
+          git diff --exit-code -- package.json package-lock.json
       - name: Build, typecheck and test
         run: npm run check
       - name: Verify the packed package in an independent consumer

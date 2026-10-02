@@ -23,6 +23,13 @@ and checks its local HTTP/WebSocket routes. It needs npm registry access unless
 dependencies are already cached. It uses fictional credentials and does not
 place a phone call or publish anything.
 
+The locked development runtime and starter use Eve `0.70.1`. The peer contract
+also retains exact legacy `0.63.0` compatibility. Set `EVE_TEST_VERSION=0.63.0`
+when running `npm run test:package` to select that version in the temporary
+consumer. CI separately installs each supported runtime for source build,
+typechecking and unit tests, then checks the corresponding consumer. Do not
+broaden the peer range to versions that have not passed these checks.
+
 For the shorter offline walkthrough, run `npm run demo`. For a supervised live
 call, follow [the incoming-call starter instructions](examples/inbound/README.md)
 using your own account and an authorized test caller.

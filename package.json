@@ -48,11 +48,11 @@
     "prepublishOnly": "npm run check && npm run test:package"
   },
   "peerDependencies": {
-    "eve": "0.63.0"
+    "eve": "0.63.0 || 0.70.1"
   },
   "devDependencies": {
     "@types/node": "24.0.15",
-    "eve": "0.63.0",
+    "eve": "0.70.1",
     "tsx": "4.20.3",
     "typescript": "7.0.2",
     "ai": "7.0.107",
