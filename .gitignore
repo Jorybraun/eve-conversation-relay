@@ -1,0 +1,12 @@
+node_modules/
+dist/
+*.tgz
+.env
+.env.*
+!.env.example
+.eve/
+.output/
+.vercel/
+*.sqlite*
+*.db
+.DS_Store

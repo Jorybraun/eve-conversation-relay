@@ -1,0 +1,69 @@
+{
+  "name": "@pipey/eve-conversation-relay",
+  "version": "0.1.0",
+  "description": "Twilio ConversationRelay transport for Eve agents",
+  "license": "MIT",
+  "keywords": [
+    "eve",
+    "twilio",
+    "conversation-relay",
+    "phone",
+    "voice",
+    "ai-agent"
+  ],
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE",
+    "examples"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./channel": {
+      "types": "./dist/channel.d.ts",
+      "import": "./dist/channel.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
+    "test": "node --import tsx --test test/*.test.ts",
+    "check": "npm run build && npm run typecheck && npm test",
+    "demo": "npm run build && node --import tsx examples/simulate-call.ts",
+    "test:package": "node scripts/verify-package.mjs",
+    "prepack": "npm run build",
+    "prepublishOnly": "npm run check && npm run test:package"
+  },
+  "peerDependencies": {
+    "eve": "0.63.0"
+  },
+  "devDependencies": {
+    "@types/node": "24.0.15",
+    "eve": "0.63.0",
+    "tsx": "4.20.3",
+    "typescript": "7.0.2",
+    "ai": "7.0.107",
+    "zod": "4.6.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Jorybraun/eve-conversation-relay.git"
+  },
+  "homepage": "https://github.com/Jorybraun/eve-conversation-relay#readme",
+  "bugs": {
+    "url": "https://github.com/Jorybraun/eve-conversation-relay/issues"
+  }
+}
